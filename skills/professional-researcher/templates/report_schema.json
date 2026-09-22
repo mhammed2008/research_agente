@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProfessionalResearchReportSchema",
+  "description": "Schema for structured research report input (v2.0). Supports headings, paragraphs, bullets with nesting, callouts, blockquotes, tables, code blocks, images, and horizontal rules.",
+  "type": "object",
+  "required": ["metadata", "blocks"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "author": { "type": "string" },
+        "organization": { "type": "string" },
+        "date": { "type": "string" },
+        "classification": { "type": "string" }
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["heading", "paragraph", "bullet", "callout", "blockquote", "table", "code", "image", "hr"]
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6,
+            "description": "Heading level (1-6). Only used when type is 'heading'."
+          },
+          "text": {
+            "type": "string",
+            "description": "Text content for headings, paragraphs, bullets, callouts, blockquotes, and code blocks."
+          },
+          "title": {
+            "type": "string",
+            "description": "Title for callout blocks."
+          },
+          "callout_type": {
+            "type": "string",
+            "enum": ["note", "warning", "important", "tip"],
+            "description": "Type of callout. Only used when type is 'callout'."
+          },
+          "indent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2,
+            "default": 0,
+            "description": "Bullet nesting level (0=top, 1=sub, 2=sub-sub). Only used when type is 'bullet'."
+          },
+          "language": {
+            "type": "string",
+            "description": "Programming language for code blocks (e.g. 'python', 'c'). Only used when type is 'code'."
+          },
+          "path": {
+            "type": "string",
+            "description": "File path for image blocks. Only used when type is 'image'."
+          },
+          "alt": {
+            "type": "string",
+            "description": "Alt text / caption for image blocks. Only used when type is 'image'."
+          },
+          "headers": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Column headers for table blocks."
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "description": "Row data for table blocks."
+          }
+        }
+      }
+    }
+  }
+}

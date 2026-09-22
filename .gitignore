@@ -1,0 +1,25 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.pytest_cache/
+
+# Crashpad / Temporary browser and OS caches
+edge-tmp/
+*.log
+*.tmp
+*.dat
+
+# Local LLM outputs and scratch data
+ollama_hardware_results.json
+ollama_results.json
+
+# Exclude legacy research documents, presentations, and scripts
+NFC_*
+POS_*
+Unlocked_*
+slides_preview/
+create_presentation_pptx.py
+generate_*.py
+nfc_*.py

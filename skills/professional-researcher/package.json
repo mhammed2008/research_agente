@@ -1,0 +1,30 @@
+{
+  "name": "professional-researcher",
+  "version": "2.0.0",
+  "description": "Professional research and publication-grade document generation skill for PDF and Microsoft Word (.docx) with multilingual support, inline formatting, images, TOC, and nested bullets",
+  "main": "scripts/export_engine.py",
+  "scripts": {
+    "test": "pytest scripts/test_exporter.py -v",
+    "export": "python scripts/export_engine.py",
+    "install": "pip install -r requirements.txt"
+  },
+  "pythonDependencies": {
+    "required": ["reportlab>=4.0", "python-docx>=1.1.0", "Pillow>=10.0.0"],
+    "optional_rtl": ["arabic-reshaper>=3.0.0", "python-bidi>=0.6.0"],
+    "dev": ["pytest>=8.0.0"]
+  },
+  "keywords": [
+    "research",
+    "pdf",
+    "docx",
+    "reportlab",
+    "python-docx",
+    "executive-report",
+    "antigravity-skill",
+    "multilingual",
+    "rtl",
+    "arabic"
+  ],
+  "author": "TeknoKeys",
+  "license": "MIT"
+}
