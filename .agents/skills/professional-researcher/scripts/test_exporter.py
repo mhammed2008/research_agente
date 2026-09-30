@@ -27,7 +27,9 @@ from export_engine import (
     clean_markdown_inline,
     clean_markdown_for_docx,
     convert_file,
+    parse_presentation_slides,
 )
+from pptx_builder import PptxReportBuilder
 
 
 # =============================================================================
@@ -335,6 +337,535 @@ class TestArabicExport:
         assert ar_docx_kb > 10, f"Arabic DOCX suspiciously small: {ar_docx_kb} KB"
         print(f"  ✓ Arabic PDF:  {ar_pdf} ({ar_pdf_kb:.1f} KB)")
         print(f"  ✓ Arabic DOCX: {ar_docx} ({ar_docx_kb:.1f} KB)")
+
+
+
+# =============================================================================
+# Presentation (.pptx) Unit & Integration Tests
+# =============================================================================
+
+class TestSlideParsing:
+    """Tests for markdown-to-presentation slide segmentation and layout inference."""
+
+    def test_slide_segmentation_hr(self):
+        md = "# Main Presentation\nIntro\n---\n## Slide 2\nContent\n---\n## Slide 3\nClosing"
+        slides = parse_presentation_slides(md)
+        assert len(slides) == 3
+        assert slides[0]["title"] == "Main Presentation"
+        assert slides[1]["title"] == "Slide 2"
+        assert slides[2]["title"] == "Slide 3"
+
+    def test_slide_segmentation_h2(self):
+        md = "## Overview\nBullet 1\n\n## Deep Dive\nDetails\n\n## Next Steps\nWrap up"
+        slides = parse_presentation_slides(md)
+        assert len(slides) == 3
+        assert slides[0]["title"] == "Overview"
+        assert slides[1]["title"] == "Deep Dive"
+        assert slides[2]["title"] == "Next Steps"
+
+    def test_layout_directives(self):
+        md = "## Architecture\n<!-- layout: two-column -->\n<!-- category: Infrastructure -->\n### Cloud\n- AWS\n### Edge\n- Cloudflare"
+        slides = parse_presentation_slides(md)
+        assert len(slides) == 1
+        assert slides[0]["layout"] == "two-column"
+        assert slides[0]["category"] == "Infrastructure"
+        assert slides[0]["col1_title"] == "Cloud"
+        assert slides[0]["col2_title"] == "Edge"
+
+    def test_metrics_inference(self):
+        md = "## Benchmark Results\n- **99.99%** High Availability | Multi-region\n- **<50ms** Latency | Fast response\n- **3.5x** ROI | Annual savings"
+        slides = parse_presentation_slides(md)
+        assert len(slides) == 1
+        assert slides[0]["layout"] == "metrics"
+        assert len(slides[0]["metrics"]) == 3
+        assert slides[0]["metrics"][0]["value"] == "99.99%"
+        assert slides[0]["metrics"][0]["label"] == "High Availability"
+        assert slides[0]["metrics"][0]["sub"] == "Multi-region"
+
+
+class TestPptxBuilder:
+    """Tests for PptxReportBuilder shape, table, and RTL generation."""
+
+    def test_pptx_deck_creation(self, tmp_path):
+        out_file = str(tmp_path / "test_deck.pptx")
+        builder = PptxReportBuilder(
+            filename=out_file,
+            title="Enterprise AI Architecture",
+            subtitle="Strategic Implementation Roadmap",
+            author="Lead Architect",
+            organization="TeknoKeys",
+            theme="emerald"
+        )
+        builder.add_title_slide()
+        builder.add_agenda_slide(items=["System Overview", "Security Review", "Cost Analysis"])
+        builder.add_content_slide(
+            title="Core Tenets",
+            blocks=[{"type": "bullet", "text": "Zero-trust network model", "indent": 0}],
+            category="SECURITY"
+        )
+        builder.add_two_column_slide(
+            title="Framework Evaluation",
+            col1_title="Framework A",
+            col1_blocks=[{"type": "paragraph", "text": "Lightweight"}],
+            col2_title="Framework B",
+            col2_blocks=[{"type": "paragraph", "text": "Feature-rich"}],
+            category="EVALUATION"
+        )
+        builder.add_metrics_slide(
+            title="Key Performance Metrics",
+            metrics=[{"value": "10k+", "label": "Active Nodes", "sub": "Globally distributed"}],
+            category="SCALE"
+        )
+        builder.add_callout_slide(
+            title="Compliance Mandate",
+            callout_type="important",
+            callout_title="PCI DSS v4.0",
+            text="Mandatory end-to-end tokenization enforced.",
+            category="COMPLIANCE"
+        )
+        builder.add_table_slide(
+            title="Vendor Matrix",
+            headers=["Platform", "Latency", "Compliance"],
+            rows=[["Platform A", "12ms", "Certified"], ["Platform B", "45ms", "Pending"]],
+            category="BENCHMARK"
+        )
+        builder.add_code_slide(
+            title="Runtime Hook",
+            code_text="def authenticate(token):\n    return verify_jwt(token)",
+            category="SECURITY"
+        )
+        builder.add_closing_slide()
+        builder.save()
+
+        assert os.path.exists(out_file)
+        assert os.path.getsize(out_file) > 15000
+
+    def test_pptx_arabic_rtl(self, tmp_path):
+        out_file = str(tmp_path / "test_arabic.pptx")
+        builder = PptxReportBuilder(
+            filename=out_file,
+            title="الذكاء الاصطناعي في قطاع المدفوعات",
+            subtitle="دراسة معمارية شاملة",
+            author="خبير النظم المالية",
+            organization="شركة التقنية المتقدمة"
+        )
+        assert builder.is_rtl_doc is True
+        s = builder.add_title_slide()
+        tf = next((shp.text_frame for shp in s.shapes if shp.has_text_frame and len(shp.text_frame.paragraphs) > 1), s.shapes[1].text_frame)
+        p = tf.paragraphs[1]
+        pPr = p._p.get_or_add_pPr()
+        assert pPr.get("rtl") == "1"
+
+        builder.add_closing_slide(title="الخاتمة والتوصيات الاستراتيجية")
+        builder.save()
+        assert os.path.exists(out_file)
+        assert os.path.getsize(out_file) > 10000
+
+
+class TestPptxExportIntegration:
+    """Integration test: Full markdown to PPTX export."""
+
+    def test_english_presentation_export(self, tmp_path):
+        md_file = tmp_path / "pres.md"
+        pptx_file = str(tmp_path / "pres.pptx")
+        md_content = """---
+title: "Modern AI Engineering"
+subtitle: "Production Patterns"
+author: "AI Research Team"
+organization: "TeknoKeys"
+theme: "slate"
+---
+
+## Executive Summary
+<!-- category: Overview -->
+- Multi-agent orchestration architectures
+- High-efficiency context pruning
+- Real-time attestation and governance
+
+---
+
+## Architectural Comparison
+<!-- layout: two-column -->
+<!-- category: Architecture -->
+### Client Architecture
+- Edge rendering
+- Local cache
+
+### Cloud Architecture
+- Distributed workers
+- Vector search
+
+---
+
+## Performance Targets
+<!-- layout: metrics -->
+<!-- category: Telemetry -->
+- **99.9%** Availability | Production uptime
+- **<20ms** Latency | P99 API response
+- **5.2x** Throughput | Concurrent scale
+"""
+        md_file.write_text(md_content, encoding="utf-8")
+        res = convert_file(input_path=str(md_file), pptx_path=pptx_file)
+        assert os.path.exists(pptx_file)
+        assert os.path.getsize(pptx_file) > 20000
+
+    def test_arabic_presentation_export(self, tmp_path):
+        md_file = tmp_path / "arabic_pres.md"
+        pptx_file = str(tmp_path / "arabic_pres.pptx")
+        md_content = """---
+title: "التحول الرقمي في المدفوعات المالية"
+subtitle: "مستقبل المحافظ الرقمية والتقنيات اللاتلامسية"
+author: "مستشار التقنية المالية"
+organization: "مجموعة جيب المالية"
+theme: "emerald"
+---
+
+## نظرة عامة على النظام
+<!-- category: الملخص التنفيذي -->
+- نمو المعاملات اللاتلامسية بنسبة تتجاوز 40% سنوياً
+- اعتماد معايير الأمان العالمية PCI MPoC
+- تكامل سلس مع منصات التجارة الإلكترونية
+
+---
+
+## مؤشرات الأداء الرئيسية
+<!-- layout: metrics -->
+<!-- category: المؤشرات -->
+- **45%** نمو سنوي | في حجم العمليات
+- **99.99%** جاهزية الخدمة | دون توقف
+- **<1.2s** زمن تنفيذ العملية | تجربة فائقة السرعة
+"""
+        md_file.write_text(md_content, encoding="utf-8")
+        res = convert_file(input_path=str(md_file), pptx_path=pptx_file)
+        assert os.path.exists(pptx_file)
+        assert os.path.getsize(pptx_file) > 20000
+
+
+
+# =============================================================================
+# Dynamic Styles & Brand Logo Integration Tests
+# =============================================================================
+
+class TestDynamicStylesAndBranding:
+    """Tests for customizable palettes, custom hex colors, and logo embedding."""
+
+    def test_custom_hex_palette_export(self, tmp_path):
+        md_file = tmp_path / "custom_style.md"
+        pdf_file = str(tmp_path / "custom.pdf")
+        docx_file = str(tmp_path / "custom.docx")
+        pptx_file = str(tmp_path / "custom.pptx")
+        md_content = """---
+title: "Custom Brand Evaluation"
+subtitle: "Tailored Corporate Identity"
+author: "Design Lead"
+organization: "Brand Labs"
+---
+
+## Executive Overview
+- Custom color token application
+- Independent primary and accent palettes
+"""
+        md_file.write_text(md_content, encoding="utf-8")
+        res = convert_file(
+            input_path=str(md_file),
+            pdf_path=pdf_file,
+            docx_path=docx_file,
+            pptx_path=pptx_file,
+            primary_color="#7C3AED",
+            accent_color="#10B981"
+        )
+        assert os.path.exists(pdf_file)
+        assert os.path.exists(docx_file)
+        assert os.path.exists(pptx_file)
+        assert os.path.getsize(pdf_file) > 5000
+        assert os.path.getsize(docx_file) > 10000
+        assert os.path.getsize(pptx_file) > 15000
+
+    def test_logo_embedding_all_formats(self, tmp_path):
+        from PIL import Image, ImageDraw
+        logo_path = str(tmp_path / "test_logo.png")
+        img = Image.new("RGBA", (300, 100), color=(15, 23, 42, 255))
+        d = ImageDraw.Draw(img)
+        d.text((20, 35), "BRAND LOGO", fill=(255, 255, 255, 255))
+        img.save(logo_path)
+
+        md_file = tmp_path / "logo_report.md"
+        pdf_file = str(tmp_path / "logo.pdf")
+        docx_file = str(tmp_path / "logo.docx")
+        pptx_file = str(tmp_path / "logo.pptx")
+        md_content = """---
+title: "Branded Report with Custom Logo"
+subtitle: "Corporate Identity Integration"
+author: "Principal Analyst"
+organization: "Enterprise Co"
+---
+
+## Key Achievements
+- Verified logo embedding on Cover Pages and Slide Headers
+- Maintained exact aspect ratio scaling
+"""
+        md_file.write_text(md_content, encoding="utf-8")
+        res = convert_file(
+            input_path=str(md_file),
+            pdf_path=pdf_file,
+            docx_path=docx_file,
+            pptx_path=pptx_file,
+            logo_path=logo_path
+        )
+        assert os.path.exists(pdf_file)
+        assert os.path.exists(docx_file)
+        assert os.path.exists(pptx_file)
+        assert os.path.getsize(pdf_file) > 5000
+        assert os.path.getsize(docx_file) > 10000
+        assert os.path.getsize(pptx_file) > 15000
+
+    def test_style_wizard_loading(self, tmp_path):
+        import json
+        from style_wizard import load_style_config
+        cfg_file = tmp_path / "style.json"
+        cfg_data = {
+            "style_id": "luxury-violet",
+            "primary_color": "#2E1065",
+            "accent_color": "#7C3AED"
+        }
+        cfg_file.write_text(json.dumps(cfg_data), encoding="utf-8")
+
+        loaded = load_style_config(str(cfg_file))
+        assert loaded["style_id"] == "luxury-violet"
+        assert loaded["primary_color"] == "#2E1065"
+
+        loaded_dict = load_style_config(cfg_data)
+        assert loaded_dict["accent_color"] == "#7C3AED"
+
+    def test_color_synthesizer_palette_extraction(self, tmp_path):
+        from PIL import Image
+        from color_synthesizer import synthesize_palette, hex_to_rgb
+
+        # Create emerald test badge
+        logo_path = str(tmp_path / "emerald_logo.png")
+        img = Image.new("RGBA", (200, 200), (6, 78, 59, 255))
+        img.save(logo_path)
+
+        palette = synthesize_palette(logo_path=logo_path)
+        assert "primary" in palette
+        assert "accent" in palette
+        assert "bg_light" in palette
+        assert "card_border" in palette
+        assert palette["primary_hex"].startswith("#")
+        assert palette["accent_hex"].startswith("#")
+
+    def test_pptx_clean_geometry_and_callout_brackets(self, tmp_path):
+        from pptx_builder import PptxReportBuilder
+        pptx_path = str(tmp_path / "clean_deck.pptx")
+        builder = PptxReportBuilder(
+            filename=pptx_path,
+            title="Clean Consultant Deck",
+            theme="emerald"
+        )
+        builder.add_title_slide()
+        # Test two column slide
+        builder.add_two_column_slide(
+            title="Comparison",
+            col1_title="Left Perspective",
+            col1_blocks=[{"type": "bullet", "text": "Bullet 1"}],
+            col2_title="Right Perspective",
+            col2_blocks=[{"type": "bullet", "text": "Bullet 2"}]
+        )
+        # Test callout slide - brackets should be removed
+        builder.add_callout_slide(
+            title="Strategic Mandate",
+            callout_type="important",
+            callout_title="[CRITICAL DIRECTIVE]",
+            text="Executive takeaway without bracket clutter."
+        )
+        builder.save()
+        assert os.path.exists(pptx_path)
+        assert os.path.getsize(pptx_path) > 10000
+
+
+class TestDomainAdaptivePresentationArchetypes:
+    """Tests for the 5 structural presentation archetypes and dynamic style parser."""
+
+    def test_archetypes_palette_synthesis(self):
+        from color_synthesizer import synthesize_palette
+
+        # 1. Modern Dark
+        p_dark = synthesize_palette(archetype="modern_dark")
+        assert p_dark["is_dark_canvas"] is True
+        assert p_dark["card_framing"] == "translucent"
+        # Canvas should be very dark (near black/navy)
+        assert p_dark["bg_light"][0] < 30 and p_dark["bg_light"][1] < 30 and p_dark["bg_light"][2] < 40
+
+        # 2. Minimal Editorial
+        p_min = synthesize_palette(archetype="minimal_editorial")
+        assert p_min["is_dark_canvas"] is False
+        assert p_min["card_framing"] == "frameless"
+        assert p_min["bg_light"] == (255, 255, 255)
+
+        # 3. Consulting Grid
+        p_cg = synthesize_palette(archetype="consulting_grid")
+        assert p_cg["card_framing"] == "sharp_card"
+
+        # 4. Warm Organic
+        p_warm = synthesize_palette(archetype="warm_organic")
+        assert p_warm["card_framing"] == "rounded_card"
+        assert p_warm["bg_light"][0] >= 245 and p_warm["bg_light"][1] >= 245 and p_warm["bg_light"][2] >= 240
+
+        # 5. Vibrant Bold
+        p_vib = synthesize_palette(archetype="vibrant_bold")
+        assert p_vib["card_framing"] == "flat_tile"
+
+    def test_style_prompt_parser(self):
+        from style_wizard import parse_style_prompt
+
+        # Dark / Cyber
+        res_dark = parse_style_prompt("Please make a sleek obsidian dark theme with cyan neon accents for an AI dev deck")
+        assert res_dark["archetype"] == "modern_dark"
+        assert res_dark["is_dark_canvas"] is True
+        assert res_dark["accent_color"] is not None
+
+        # Minimal / Swiss
+        res_min = parse_style_prompt("Clean minimal monochrome black and white Swiss typography, zero cards")
+        assert res_min["archetype"] == "minimal_editorial"
+        assert res_min["card_framing"] == "frameless"
+
+        # Consulting BCG
+        res_cons = parse_style_prompt("Executive corporate McKinsey BCG consulting grid deck with sharp borders and navy tone")
+        assert res_cons["archetype"] == "consulting_grid"
+        assert res_cons["card_framing"] == "sharp_card"
+
+        # Warm Organic
+        res_warm = parse_style_prompt("Earthy warm organic cream canvas with terracotta and sage green colors")
+        assert res_warm["archetype"] == "warm_organic"
+
+        # Vibrant Bold
+        res_vib = parse_style_prompt("High-energy fintech startup presentation with vibrant bold electric purple")
+        assert res_vib["archetype"] == "vibrant_bold"
+
+    def test_pptx_archetype_generation(self, tmp_path):
+        from pptx_builder import PptxReportBuilder
+
+        for arch in ["modern_dark", "minimal_editorial", "warm_organic", "vibrant_bold", "consulting_grid"]:
+            pptx_path = str(tmp_path / f"deck_{arch}.pptx")
+            builder = PptxReportBuilder(
+                filename=pptx_path,
+                title=f"Sample {arch.replace('_', ' ').title()} Deck",
+                subtitle="Domain-Adaptive Style Test",
+                author="Senior Architect",
+                archetype=arch
+            )
+            builder.add_title_slide()
+            builder.add_agenda_slide([
+                {"number": "01", "title": "Market Dynamics", "desc": "Global industry shifts"},
+                {"number": "02", "title": "Core Methodology", "desc": "Empirical validation architecture"},
+            ])
+            builder.add_metrics_slide(
+                title="Key Performance Metrics",
+                metrics=[
+                    {"number": "99.8%", "label": "Accuracy Gate", "desc": "Zero hallucinatory data"},
+                    {"number": "4.2x", "label": "Throughput", "desc": "Accelerated synthesis pipeline"},
+                ]
+            )
+            builder.add_two_column_slide(
+                title="Comparative Architecture",
+                col1_title="Legacy Static Approach",
+                col1_blocks=[{"type": "bullet", "text": "Rigid light gray canvas with identical rounded cards"}],
+                col2_title="Domain-Adaptive Archetype",
+                col2_blocks=[{"type": "bullet", "text": "Tailored structural canvas, typography, and card framing"}]
+            )
+            builder.add_callout_slide(
+                title="Strategic Recommendation",
+                callout_type="important",
+                callout_title="Mandate",
+                text="Adopt archetype synthesis across all executive client decks."
+            )
+            builder.add_closing_slide()
+            builder.save()
+
+            assert os.path.exists(pptx_path)
+            assert os.path.getsize(pptx_path) > 12000
+
+    def test_export_engine_archetype_frontmatter(self, tmp_path):
+        from export_engine import convert_file
+
+        md_file = tmp_path / "dark_deck.md"
+        pptx_file = str(tmp_path / "dark_deck.pptx")
+        md_content = """---
+title: "Autonomous Agent Security"
+subtitle: "AI Safety & Governance"
+archetype: "modern_dark"
+style_prompt: "dark theme with cyber neon green accents"
+---
+
+## Core Findings
+- Zero unauthorized privilege escalation
+- Real-time telemetry monitoring
+
+| Metric | Target | Result |
+|---|---|---|
+| Latency | <50ms | 18ms |
+| F1 Score | >0.95 | 0.98 |
+"""
+        md_file.write_text(md_content, encoding="utf-8")
+        res = convert_file(
+            input_path=str(md_file),
+            pptx_path=pptx_file,
+            archetype="modern_dark"
+        )
+        assert os.path.exists(pptx_file)
+        assert os.path.getsize(pptx_file) > 15000
+
+
+class TestMermaidDiagramExport:
+    def test_mermaid_vector_pdf_and_docx_export(self, tmp_path):
+        from pathlib import Path
+        from export_engine import convert_file
+
+        md_file = tmp_path / "diagram_report.md"
+        pdf_file = str(tmp_path / "diagram_report.pdf")
+        docx_file = str(tmp_path / "diagram_report.docx")
+        html_file = str(tmp_path / "diagram_report.html")
+
+        md_content = """---
+title: "Decentralized Ledger Architecture"
+subtitle: "High-Throughput Cryptographic Pipeline"
+---
+
+## System Flow & Validation
+
+Here is the operational lifecycle of an inbound transaction:
+
+```mermaid
+flowchart TD
+    Start(["Inbound Transaction"]) --> Verify{"Valid Signature?"}
+    Verify -- "Yes" --> Commit["ACID Ledger Commit"]
+    Verify -- "No" --> Reject["Security Alert"]
+
+    classDef startEnd fill:#1e293b,stroke:#0f172a,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef process fill:#eff6ff,stroke:#2563eb,stroke-width:1.5px,color:#1e3a8a;
+    classDef decision fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f,font-weight:bold;
+
+    class Start startEnd;
+    class Commit process;
+    class Verify decision;
+```
+
+## Summary
+The transaction terminates with strict atomic integrity.
+"""
+        md_file.write_text(md_content, encoding="utf-8")
+        res = convert_file(
+            input_path=str(md_file),
+            html_path=html_file,
+            pdf_path=pdf_file,
+            docx_path=docx_file
+        )
+        assert os.path.exists(html_file)
+        assert "<pre class=\"mermaid\">" in Path(html_file).read_text(encoding="utf-8")
+        assert os.path.exists(pdf_file)
+        assert os.path.getsize(pdf_file) > 1000
+        assert os.path.exists(docx_file)
+        assert os.path.getsize(docx_file) > 1000
 
 
 # Legacy runner compatibility

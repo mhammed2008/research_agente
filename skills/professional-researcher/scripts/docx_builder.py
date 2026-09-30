@@ -44,7 +44,7 @@ def apply_rtl_to_run(run):
     """Injects Word OpenXML rtl and complex script font into run properties."""
     rPr = run._r.get_or_add_rPr()
     rPr.append(parse_xml(f'<w:rtl {nsdecls("w")}/>'))
-    rPr.append(parse_xml(f'<w:rFonts {nsdecls("w")} w:cs="Arial"/>'))
+    rPr.append(parse_xml(f'<w:rFonts {nsdecls("w")} w:cs="Cairo"/>'))
 
 def hex_to_rgb(hex_str):
     hex_str = hex_str.lstrip("#")
@@ -52,7 +52,8 @@ def hex_to_rgb(hex_str):
 
 
 class DocxReportBuilder:
-    def __init__(self, filename, title="Research Report", subtitle="", author="", organization="", date_str=""):
+    def __init__(self, filename, title="Research Report", subtitle="", author="", organization="",
+                 date_str="", style=None, logo_path=None):
         self.filename = filename
         self.title = title
         self.subtitle = subtitle
@@ -70,14 +71,29 @@ class DocxReportBuilder:
             section.right_margin = Inches(0.75)
             section.different_first_page_header_footer = True
 
-        # Palette
-        self.color_primary = hex_to_rgb("#0F172A")    # Deep Navy
-        self.color_accent = hex_to_rgb("#2563EB")     # Royal Blue
-        self.color_secondary = hex_to_rgb("#334155")  # Slate
-        self.color_body = hex_to_rgb("#1E293B")       # Dark Charcoal
-        self.color_muted = hex_to_rgb("#64748B")      # Slate-500
+        # Dynamic Theme Colors
+        self.style = style or {}
+        p_hex = self.style.get("primary_hex") or self.style.get("primary_color") or self.style.get("primary") or "#0F172A"
+        a_hex = self.style.get("accent_hex") or self.style.get("accent_color") or self.style.get("accent") or "#2563EB"
+        s_hex = self.style.get("secondary_hex") or self.style.get("secondary") or "#334155"
+        b_hex = self.style.get("body_hex") or self.style.get("body") or "#1E293B"
+        m_hex = self.style.get("muted_hex") or self.style.get("muted") or "#64748B"
 
-        self.font_family = "Arial" if self.is_rtl_doc else "Calibri"
+        self.color_primary = hex_to_rgb(p_hex)
+        self.color_accent = hex_to_rgb(a_hex)
+        self.color_secondary = hex_to_rgb(s_hex)
+        self.color_body = hex_to_rgb(b_hex)
+        self.color_muted = hex_to_rgb(m_hex)
+
+        self.logo_path = logo_path or self.style.get("logo_path") or self.style.get("logo")
+        if self.logo_path and not os.path.exists(self.logo_path):
+            self.logo_path = None
+
+        custom_font = self.style.get("font_family") or self.style.get("font")
+        if custom_font:
+            self.font_family = "Cairo" if self.is_rtl_doc else custom_font
+        else:
+            self.font_family = "Cairo" if self.is_rtl_doc else "Calibri"
 
         self._configure_styles()
         self._configure_headers_footers()
@@ -170,9 +186,22 @@ class DocxReportBuilder:
                 apply_rtl_to_paragraph(fp)
 
     def build_cover_page(self):
+        # Embed Logo on Cover Page
+        if self.logo_path and os.path.exists(self.logo_path):
+            p_logo = self.doc.add_paragraph()
+            p_logo.paragraph_format.space_before = Pt(10)
+            p_logo.paragraph_format.space_after = Pt(12)
+            if self.is_rtl_doc:
+                p_logo.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+            try:
+                run_logo = p_logo.add_run()
+                run_logo.add_picture(self.logo_path, width=Inches(1.8))
+            except Exception:
+                pass
+
         badge_text = "تقرير بحثي أمني وتقني استراتيجي" if self.is_rtl_doc else "STRATEGIC RESEARCH & TECHNICAL EVALUATION"
         p_badge = self.doc.add_paragraph()
-        p_badge.paragraph_format.space_before = Pt(10)
+        p_badge.paragraph_format.space_before = Pt(6)
         p_badge.paragraph_format.space_after = Pt(8)
         run_badge = p_badge.add_run(badge_text)
         run_badge.font.size = Pt(9.5)
@@ -204,8 +233,9 @@ class DocxReportBuilder:
                 apply_rtl_to_paragraph(p_sub)
                 apply_rtl_to_run(run_sub)
 
+        spacer_pts = 70 if (self.logo_path and os.path.exists(self.logo_path)) else 140
         p_line = self.doc.add_paragraph()
-        p_line.paragraph_format.space_after = Pt(140)
+        p_line.paragraph_format.space_after = Pt(spacer_pts)
         run_bar = p_line.add_run("―" * 50)
         run_bar.font.color.rgb = hex_to_rgb("#CBD5E1")
         if self.is_rtl_doc:
@@ -690,6 +720,65 @@ class DocxReportBuilder:
         p_space = self.doc.add_paragraph()
         p_space.paragraph_format.space_after = Pt(4)
 
+    def add_mermaid_block(self, code_text):
+        """Renders an executive diagram card for Mermaid architecture/flowcharts in Word (.docx)."""
+        table = self.doc.add_table(rows=1, cols=1)
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        cell = table.cell(0, 0)
+        cell.width = Inches(7.0)
+
+        tcPr = cell._tc.get_or_add_tcPr()
+        borders = parse_xml(
+            f'<w:tcBorders {nsdecls("w")}>'
+            f'  <w:top w:val="single" w:sz="6" w:space="0" w:color="2563EB"/>'
+            f'  <w:bottom w:val="single" w:sz="6" w:space="0" w:color="2563EB"/>'
+            f'  <w:left w:val="single" w:sz="24" w:space="0" w:color="2563EB"/>'
+            f'  <w:right w:val="single" w:sz="6" w:space="0" w:color="2563EB"/>'
+            f'</w:tcBorders>'
+        )
+        tcPr.append(borders)
+
+        shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="F8FAFC"/>')
+        tcPr.append(shd)
+
+        mar = parse_xml(
+            f'<w:tcMar {nsdecls("w")}>'
+            f'  <w:top w:w="140" w:type="dxa"/>'
+            f'  <w:bottom w:w="140" w:type="dxa"/>'
+            f'  <w:left w:w="180" w:type="dxa"/>'
+            f'  <w:right w:w="180" w:type="dxa"/>'
+            f'</w:tcMar>'
+        )
+        tcPr.append(mar)
+
+        p = cell.paragraphs[0]
+        p.paragraph_format.space_after = Pt(4)
+        p.paragraph_format.line_spacing = 1.15
+        is_rtl = is_rtl_text(code_text)
+        align = WD_ALIGN_PARAGRAPH.RIGHT if is_rtl else WD_ALIGN_PARAGRAPH.LEFT
+        p.alignment = align
+        if is_rtl:
+            apply_rtl_to_paragraph(p)
+
+        badge_text = "📊 مخطط هيكلي ومعماري (Architectural Diagram Specification)\n" if is_rtl else "📊 ARCHITECTURAL DIAGRAM SPECIFICATION\n"
+        badge_run = p.add_run(badge_text)
+        badge_run.font.bold = True
+        badge_run.font.size = Pt(9.5)
+        badge_run.font.color.rgb = hex_to_rgb(self.accent_hex) if hasattr(self, 'accent_hex') else hex_to_rgb("#2563EB")
+        if is_rtl:
+            apply_rtl_to_run(badge_run)
+
+        r = p.add_run(code_text.strip())
+        r.font.name = "Consolas"
+        r.font.size = Pt(8.5)
+        r.font.color.rgb = hex_to_rgb("#334155")
+        if is_rtl:
+            apply_rtl_to_run(r)
+
+        p_space = self.doc.add_paragraph()
+        p_space.paragraph_format.space_after = Pt(6)
+
     def save(self):
         self.doc.save(self.filename)
         return self.filename
+

@@ -1,15 +1,16 @@
 {
   "name": "professional-researcher",
-  "version": "2.0.0",
-  "description": "Professional research and publication-grade document generation skill for PDF and Microsoft Word (.docx) with multilingual support, inline formatting, images, TOC, and nested bullets",
+  "version": "2.2.0",
+  "description": "Professional research and publication-grade document and presentation generation skill for PDF, Microsoft Word (.docx), and PowerPoint (.pptx) with dynamic styling, custom branding/logos, interactive questionnaire wizard, multilingual support, inline formatting, images, TOC, and nested bullets",
   "main": "scripts/export_engine.py",
   "scripts": {
     "test": "pytest scripts/test_exporter.py -v",
     "export": "python scripts/export_engine.py",
+    "wizard": "python scripts/style_wizard.py",
     "install": "pip install -r requirements.txt"
   },
   "pythonDependencies": {
-    "required": ["reportlab>=4.0", "python-docx>=1.1.0", "Pillow>=10.0.0"],
+    "required": ["reportlab>=4.0", "python-docx>=1.1.0", "python-pptx>=1.0.0", "Pillow>=10.0.0"],
     "optional_rtl": ["arabic-reshaper>=3.0.0", "python-bidi>=0.6.0"],
     "dev": ["pytest>=8.0.0"]
   },
@@ -17,8 +18,17 @@
     "research",
     "pdf",
     "docx",
+    "pptx",
+    "presentation",
+    "slides",
+    "powerpoint",
+    "branding",
+    "custom-logo",
+    "dynamic-styles",
+    "style-wizard",
     "reportlab",
     "python-docx",
+    "python-pptx",
     "executive-report",
     "antigravity-skill",
     "multilingual",

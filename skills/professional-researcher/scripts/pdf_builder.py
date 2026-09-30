@@ -189,7 +189,8 @@ class NumberedCanvas(canvas.Canvas):
 
 
 class PDFReportBuilder:
-    def __init__(self, filename, title="Research Report", subtitle="", author="", organization="", date_str="", pagesize=A4):
+    def __init__(self, filename, title="Research Report", subtitle="", author="", organization="",
+                 date_str="", pagesize=A4, style=None, logo_path=None):
         self.filename = filename
         self.title = title
         self.subtitle = subtitle
@@ -204,13 +205,25 @@ class PDFReportBuilder:
         self.page_width, self.page_height = pagesize
         self.usable_width = self.page_width - 2 * self.margin
 
-        # Theme Colors
-        self.color_primary = colors.HexColor("#0F172A")    # Deep Navy
-        self.color_accent = colors.HexColor("#2563EB")     # Royal Blue
-        self.color_secondary = colors.HexColor("#334155")  # Slate
-        self.color_body = colors.HexColor("#1E293B")       # Dark Charcoal
-        self.color_light_bg = colors.HexColor("#F8FAFC")   # Slate-50
-        self.color_border = colors.HexColor("#E2E8F0")     # Slate-200
+        # Dynamic Theme Colors
+        self.style = style or {}
+        p_hex = self.style.get("primary_hex") or self.style.get("primary_color") or self.style.get("primary") or "#0F172A"
+        a_hex = self.style.get("accent_hex") or self.style.get("accent_color") or self.style.get("accent") or "#2563EB"
+        s_hex = self.style.get("secondary_hex") or self.style.get("secondary") or "#334155"
+        b_hex = self.style.get("body_hex") or self.style.get("body") or "#1E293B"
+        bg_hex = self.style.get("bg_light_hex") or self.style.get("bg_light") or "#F8FAFC"
+        border_hex = self.style.get("card_border_hex") or self.style.get("card_border") or "#E2E8F0"
+
+        self.color_primary = colors.HexColor(p_hex)
+        self.color_accent = colors.HexColor(a_hex)
+        self.color_secondary = colors.HexColor(s_hex)
+        self.color_body = colors.HexColor(b_hex)
+        self.color_light_bg = colors.HexColor(bg_hex)
+        self.color_border = colors.HexColor(border_hex)
+
+        self.logo_path = logo_path or self.style.get("logo_path") or self.style.get("logo")
+        if self.logo_path and not os.path.exists(self.logo_path):
+            self.logo_path = None
 
         self.styles = self._create_styles()
         self.story = []
@@ -455,6 +468,25 @@ class PDFReportBuilder:
         return styles
 
     def build_cover_page(self):
+        # Embed Logo on Cover Page
+        if self.logo_path and os.path.exists(self.logo_path):
+            try:
+                img = RLImage(self.logo_path)
+                if hasattr(img, 'imageWidth') and img.imageWidth > 0:
+                    aspect = img.imageHeight / img.imageWidth
+                    w = min(150, img.imageWidth)
+                    h = w * aspect
+                    if h > 60:
+                        h = 60
+                        w = h / aspect
+                    img.drawWidth = w
+                    img.drawHeight = h
+                    img.hAlign = "RIGHT" if self.is_rtl_doc else "LEFT"
+                    self.story.append(img)
+                    self.story.append(Spacer(1, 14))
+            except Exception:
+                pass
+
         # Top Accent Bar
         self.story.append(HRFlowable(
             width="100%",
@@ -481,7 +513,8 @@ class PDFReportBuilder:
             hAlign="RIGHT" if self.is_rtl_doc else "LEFT"
         ))
 
-        self.story.append(Spacer(1, 140))
+        spacer_h = 70 if (self.logo_path and os.path.exists(self.logo_path)) else 140
+        self.story.append(Spacer(1, spacer_h))
 
         # Metadata Table
         meta_data = []

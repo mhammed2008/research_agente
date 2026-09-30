@@ -1,20 +1,39 @@
 # Visual Styling & Document Aesthetics Guide
 
-This guide details the aesthetic standards enforced by the PDF and Word exporters in the `professional-researcher` skill.
+This guide details the aesthetic standards enforced by the PDF, Word, and PowerPoint exporters in the `professional-researcher` skill.
 
 ---
 
-## 🎨 Color Palette Tokens
+## 🎨 Dynamic Styling & Color Palette Tokens
 
-| Token Name | Hex Code | Purpose | Platypus Usage | Word (.docx) Usage |
-|---|---|---|---|---|
-| **Primary Navy** | `#0F172A` | Covers, H1 titles, Table Headers | `colors.HexColor("#0F172A")` | `RGBColor(15, 23, 42)` |
-| **Accent Royal Blue** | `#2563EB` | Accent bars, H2 subtitles, Badges | `colors.HexColor("#2563EB")` | `RGBColor(37, 99, 235)` |
-| **Secondary Slate** | `#334155` | H3 headings, Subtitles | `colors.HexColor("#334155")` | `RGBColor(51, 65, 85)` |
-| **Body Charcoal** | `#1E293B` | Body paragraphs, bullet text | `colors.HexColor("#1E293B")` | `RGBColor(30, 41, 59)` |
-| **Muted Slate** | `#64748B` | Running headers/footers, metadata labels | `colors.HexColor("#64748B")` | `RGBColor(100, 116, 139)` |
-| **Light Slate Fill** | `#F8FAFC` | Zebra table rows, Callout backgrounds | `colors.HexColor("#F8FAFC")` | `w:shd w:fill="F8FAFC"` |
-| **Border Gray** | `#E2E8F0` | Table grid borders, dividers | `colors.HexColor("#E2E8F0")` | `w:tcBorders w:color="E2E8F0"` |
+Visual styling is fully customizable and **not hardcoded**. The system supports dynamic overrides via CLI (`--primary-color`, `--accent-color`), style configurations (`--style`), or frontmatter `branding:`.
+
+### Curated Palette Presets
+
+| Preset Name | Primary Hex | Accent Hex | Best Suited For |
+|---|---|---|---|
+| `corporate-navy` (Default) | `#0F172A` | `#2563EB` | Executive whitepapers, banking, institutional reports |
+| `fintech-emerald` | `#064E3B` | `#059669` | Payments, blockchain, sustainability, modern fintech |
+| `minimal-slate` | `#0F172A` | `#475569` | Developer blueprints, systems engineering, specifications |
+| `executive-crimson` | `#881337` | `#E11D48` | Defense, critical audits, aerospace, luxury leadership |
+| `luxury-violet` | `#4C1D95` | `#7C3AED` | Advanced AI research, creative computing, venture capital |
+
+---
+
+## 🖼️ Custom Brand Logo Specifications
+
+Brand logos are automatically scaled and embedded across all deliverable formats:
+
+1. **PDF Cover Page**:
+   - Position: Placed prominently above the accent color rule.
+   - Max bounds: 180pt width × 60pt height (aspect ratio strictly preserved).
+   - Spacing: Dynamically shrinks following vertical spacer to prevent cover overflow.
+2. **Word (`.docx`) Cover Page**:
+   - Position: Centered above document title block.
+   - Max bounds: 2.2 inches width.
+3. **PowerPoint (`.pptx`) Slides**:
+   - **Title Slide**: Displayed in upper branding zone (width: 2.2 inches). Coordinates mirror automatically in Arabic RTL mode.
+   - **Content Slides**: Crisp header badge logo (width: 1.0 inch) positioned in the upper right (or upper left in RTL) for consistent organizational identity.
 
 ---
 
@@ -32,11 +51,12 @@ This guide details the aesthetic standards enforced by the PDF and Word exporter
 ## 📊 Table Design Rules
 
 1. **Header Row**:
-   - Background fill `#0F172A`
-   - High-contrast bold white text
+   - Background fill dynamically matches `primary_color` (or preset).
+   - High-contrast bold white text.
    - Configured to repeat across pages on page overflow (`repeatRows=1` in PDF, `w:tblHeader` in Word).
 2. **Body Cells**:
    - Wrapped in flowable Paragraphs so text dynamically wraps without clipping.
    - Alternating zebra row backgrounds (`#F8FAFC` vs `#FFFFFF`).
    - Padding: 5pt top/bottom, 6pt left/right minimum.
    - Subtle 0.5pt border `#E2E8F0`.
+

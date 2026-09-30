@@ -1,49 +1,122 @@
 ---
 name: professional-researcher
 description: >-
-  Autonomous deep research, fact verification, and publication-grade document generation engine (v2.0).
+  Autonomous deep research, fact verification, and publication-grade document and presentation generation engine (v3.0).
   Activates when the user requests comprehensive research, market/technical analysis, architectural evaluation,
-  or asks to export/compile research into polished PDF and Microsoft Word (.docx) documents with executive
-  covers, Table of Contents, callouts, blockquotes, inline formatting, embedded images,
-  nested bullets, and data comparison tables in any language (including Arabic, English, etc.).
-  Enforces a strict ≥90% accuracy gate with multi-source triangulation.
+  or asks to export/compile research into polished PDF, Microsoft Word (.docx), and PowerPoint (.pptx) presentation decks
+  with executive covers, Table of Contents, callouts, blockquotes, inline formatting, embedded images,
+  nested bullets, KPI metric cards, two-column layouts, data comparison tables, custom brand logos,
+  and dynamic non-hardcoded color palettes in any language (including Arabic, English, etc.).
+  Enforces a strict ≥90% accuracy gate with multi-source triangulation and an adaptive intake questionnaire.
 ---
 
-# Professional Researcher Skill (`professional-researcher`) v2.0
+# Professional Researcher & Presentation Engine (`professional-researcher`) v3.0
 
-An end-to-end, high-rigor autonomous research and multi-format publishing engine. It orchestrates systematic problem decomposition, multi-source web/standards/codebase investigation, strict **≥90% fact verification and triangulation**, and automatically compiles, formats, and exports publication-grade **PDF documents** and **Microsoft Word documents (`.docx`)** in **any language** (including full Right-to-Left Arabic/Hebrew support).
-
----
-
-## 🆕 v2.0 Enhancements
-
-- **Nested bullet support** with indent levels (0, 1, 2) in both PDF and DOCX
-- **Rich inline DOCX formatting** — bold, italic, and code render as proper Word Runs (not stripped)
-- **Image/figure embedding** — `![alt](path)` syntax detects and embeds images with captions
-- **Blockquote rendering** — plain `>` quotes distinguished from `[!NOTE]` callouts, rendered with gray accent bar
-- **Table of Contents** — automatically generated after cover page in both PDF and DOCX
-- **Cross-platform fonts** — Windows, macOS, and Linux font paths probed
-- **Code language detection** — ` ```python ` blocks capture the language identifier
-- **Error handling** — graceful error messages for missing images, failed exports
-- **Improved parser** — fixed numbered list false-positive ("3 years later" no longer becomes a bullet)
-- **pytest test suite** — 30+ unit tests covering all parser functions
+An end-to-end, high-rigor autonomous multi-agent research and multi-format publishing engine. It orchestrates systematic problem decomposition, multi-source web/standards/codebase investigation, strict **≥90% fact verification and triangulation**, dynamic domain template benchmarking, brand visual identity extraction, and automatically compiles, formats, and exports publication-grade **PDF documents**, **Microsoft Word documents (`.docx`)**, and **PowerPoint presentations (`.pptx`)** in **any language** (including full Right-to-Left Arabic/Hebrew support).
 
 ---
 
-## 🎯 When to Activate This Skill
+## 🚀 The Multi-Agent Pipeline Architecture (v3.0)
 
-Use this skill whenever:
-1. The user asks to **conduct deep research**, write an executive whitepaper, or evaluate an unknown technology, system, or market.
-2. The user requires **rigorous fact-checking with at least 90% data accuracy** and multi-source corroboration.
-3. The user needs to **search for anything** across arbitrary domains (kernel, hardware, AI, cryptography, law, economics, telecom, etc.).
-4. The user requests **exporting or generating PDF or Microsoft Word (`.docx`) reports** in **English, Arabic, or any other language**.
-5. The user wants to convert existing notes or analyses into high-impact executive deliverables.
+`research_agente` operates as an autonomous multi-agent system comprising **6 specialized agent roles**:
+
+```
+                       ┌──────────────────────────────────────────────┐
+                       │          Lead Orchestrator Agent             │
+                       │    (Lifecycle & Problem Decomposition)       │
+                       └──────────────────────┬───────────────────────┘
+                                              │
+           ┌──────────────────────────────────┼──────────────────────────────────┐
+           │                                  │                                  │
+           ▼                                  ▼                                  ▼
+┌──────────────────────┐          ┌──────────────────────┐          ┌──────────────────────┐
+│ Deep Fact            │          │ Domain Template      │          │ High-Fidelity        │
+│ Investigator Agent   │          │ Researcher Agent     │          │ Document Compiler    │
+│ (≥90% Triangulation) │          │ (Benchmark Scouring) │          │ (PDF, DOCX, PPTX)    │
+└──────────┬───────────┘          └──────────┬───────────┘          └──────────┬───────────┘
+           │                                  │                                  │
+           └──────────────────────────────────┼──────────────────────────────────┘
+                                              │
+                                              ▼
+                               ┌──────────────────────────────┐
+                               │ Creative Presentation        │
+                               │ Architect Agent              │
+                               │ (Dynamic Layout & Branding)  │
+                               └──────────────┬───────────────┘
+                                              │
+                                              ▼
+                               ┌──────────────────────────────┐
+                               │ Multimodal Visual Critic     │
+                               │ (COM Vision QA & Critique)   │
+                               └──────────────────────────────┘
+```
+
+### The 6 Specialized Autonomous Roles:
+1. **Lead Orchestrator Agent (`ResearchOrchestrator`)**:
+   - Manages state machine progression: Intake $\rightarrow$ Decomposition $\rightarrow$ Investigation $\rightarrow$ Design $\rightarrow$ Compilation $\rightarrow$ Visual Audit $\rightarrow$ Completed.
+   - Decomposes mandates into 5 core hypotheses.
+2. **Deep Fact Investigator Agent (`FactInvestigatorAgent`)**:
+   - Decomposes research topics into hypotheses, parses quantitative claims, categorizes sources into 3 tiers, and enforces the **strict ≥90% accuracy triangulation gate**.
+3. **Domain Template Researcher Agent (`DomainTemplateResearcherAgent`)**:
+   - Autonomously researches real-world presentation designs, visual hierarchy, and narrative benchmarks in the subject domain (e.g. Stripe, Square, CrowdStrike, Datadog) before synthesizing the deck.
+4. **Presentation Architect Agent (`PresentationArchitectAgent`)**:
+   - Extracts authentic brand primary and accent colors directly from brand logos without artificial darkening.
+   - Sequences structurally diverse slide layouts (`split-hero`, `versus`, `architecture`, `timeline`, `grid`, `metrics`, `table`) to eliminate repetitive box monotony.
+5. **Document Compiler Agent (`DocumentCompilerAgent`)**:
+   - Compiles markdown sources into publication-grade **PowerPoint (.pptx)**, **PDF**, and **Word (.docx)**.
+   - Injects OpenXML `<a:pPr rtl="1"/>` and complex script Arabic fonts for seamless Right-to-Left (RTL) support.
+6. **Multimodal Visual Critic Agent (`VisualCriticAgent`)**:
+   - Renders slides to high-resolution PNG images via PowerPoint COM automation.
+   - Visually inspects geometry, margins, text length, and formatting defects (e.g., catching line-wrapping in badges).
+   - Mandates automated self-correction before final delivery.
+
+---
+
+## 📁 Workspace & Deliverables Management (`researches/` Mandate)
+
+All research mandates, project workspaces, and generated deliverables **must be organized under `researches/`**:
+
+```text
+researches/
+└── <research_topic_slug>/
+    ├── report/                      # Comprehensive technical research reports (Markdown, PDF, DOCX)
+    ├── presentation/                # Executive slide decks (Markdown, PPTX, PDF)
+    │   └── slides_preview/          # High-resolution slide PNG preview images
+    ├── assets/                      # Brand logos, architectural diagrams, screenshots
+    └── agent_system_output/         # Autonomous pipeline execution artifacts and logs
+```
+
+- **Git-Ignored Protection**: `researches/` is explicitly declared in `.gitignore` to prevent client research deliverables and large binary presentations from polluting version control.
+- **Repository Root Cleanliness**: Never output loose research files in the root workspace.
+
+---
+
+## 🎨 Domain-Adaptive Archetypes (5 Visual Paradigms)
+
+Styling is dynamically selected based on industry benchmarks:
+1. `modern_dark`: Deep obsidian/charcoal canvas (`#0A0F1D`), dark translucent cards (`#151E2E`), subtle hairline borders (`#2A3854`), glowing accent titles, high-contrast white text, tech badges (ideal for AI, CyberSec, Web3, Cloud).
+2. `minimal_editorial`: Pure white/milk canvas (`#FFFFFF`), **frameless / borderless layout** without container box cages, asymmetric split columns, 52pt+ oversized numbers, bold Swiss typography (ideal for Luxury, Architecture, High-Level Strategy).
+3. `consulting_grid`: Soft slate canvas (`#F8FAFC`), crisp white container cards with subtle borders, structured grids, category breadcrumbs (ideal for Corporate Governance, Banking, M&A).
+4. `warm_organic`: Soft cream/sand canvas (`#FBF9F4`), warm card containers, rounded pill badges, earthy palette tones (ideal for NGOs, Veterinary/Wildlife, Healthcare, Sustainability).
+5. `vibrant_bold`: High-energy contrast, solid color metric tiles, bold header banners, contrasting dark/bright breaker cards (ideal for Pitch Decks, Marketing, Product Launches).
+
+---
+
+## 🏛️ Structural Slide Diversity (Zero Card-Box Monotony)
+
+Repetitive container boxes are strictly forbidden. The system sequences varied structures:
+- `split-hero`: 35% strategic quote panel + 65% clean numbered items with hairline divider rules.
+- `versus`: Asymmetric problem vs. solution battle layout with central floating `VS` badge.
+- `architecture`: 3-tier system topology stack with vertical flow indicators.
+- `timeline` / `process` / `roadmap`: Real horizontal milestone stepper with connecting guideline and numbered circular node pills (`word_wrap=False`, 0 margins).
+- `grid`: 2x2 balanced feature matrix with colored side indicator bars.
+- `metrics`: Clean floating KPI cards (`<0.3s`, `>99.9%`, `0% Fraud`).
+- `table`: High-contrast comparative evaluation matrix.
+- `agenda`: Executive numbered item sequence.
 
 ---
 
 ## 🛡️ The ≥ 90% Accuracy & Fact-Verification Protocol
-
-To guarantee that research deliverables achieve **at least 90% verified factual precision**, the agent strictly adheres to the following evidence rules:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -59,43 +132,19 @@ To guarantee that research deliverables achieve **at least 90% verified factual 
 │                                                                             │
 │ • TIER 3 [Cautionary <75%]: Marketing landing pages, vendor brochures, SEO  │
 │   listicles, uncorroborated forum threads. NEVER use alone as evidence.     │
+│                                                                             │
+│ ==> MANDATE: Quantitative claims (TPS, latency, cost) require 2-source      │
+│     triangulation and explicit confidence rating tags.                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Mandatory Rules for High-Fidelity Research:
-1. **The 2-Source Triangulation Rule**: Any quantitative claim (pricing, transaction latency, battery capacity, throughput, memory overhead) or architectural assertion MUST be corroborated by at least **two independent sources** before being stated as fact.
-2. **Explicit Confidence Ratings**: Tag critical findings, data points, or tables with verification levels:
-   - `🟢 [VERIFIED: HIGH CONFIDENCE (≥90%)]`: Directly confirmed by Tier 1 primary sources or multiple independent benchmarks.
-   - `🟡 [PROVISIONAL: MEDIUM CONFIDENCE (75-89%)]`: Plausible from reputable secondary sources, awaiting direct production telemetry.
-   - `🔴 [UNVERIFIED / CONTESTED (<75%)]`: Divergent vendor claims or conflicting data.
-3. **Discrepancy Resolution (Never Mask Conflicting Data)**: If source A claims 1,500 TPS and source B claims 500 TPS, state both and identify the discrepancy (e.g. *"Vendor lab test with zero encryption vs. real-world TLS 1.3 overhead"*).
-4. **Zero-Hallucination Fallback**: If an exact parameter (e.g. chip pinout, wholesale interchange fee) is unpublished, write *"Unpublished by OEM / Pending laboratory test"* instead of inventing plausible approximations.
-
 ---
 
-## 🌐 Universal Search & Investigation Strategy
-
-The skill can investigate **any domain or technology** by synthesizing targeted, multi-perspective search queries:
-
-1. **Foundational Specifications & RFCs**:
-   - `"[technology]" ("specification" OR "whitepaper" OR "RFC" OR "architecture")`
-2. **Security & Vulnerability Intelligence**:
-   - `"[technology]" ("CVE" OR "vulnerability" OR "attestation" OR "audit report" OR "exploit")`
-3. **Hardware & Systems Datasheets**:
-   - `"[chip/OEM model]" ("datasheet" OR "pinout" OR "block diagram" OR "firmware")`
-4. **Financial, Unit Economics & Regulatory**:
-   - `"[market/fintech]" ("fee schedule" OR "interchange" OR "basis points" OR "compliance")`
-5. **Open Source & Implementation Inspection**:
-   - `site:github.com "[protocol/library]" ("README" OR "releases" OR "issues")`
-
----
-
-## 🌍 Multilingual & Multi-Language Publishing (PDF & Word)
-
-The rendering engines are pre-configured to output publication-grade deliverables in **any language**:
+## 🌍 Multilingual & Multi-Language Publishing (PDF, Word & PowerPoint)
 
 ### 1. Arabic & Right-to-Left (RTL) Support:
-- **PDF Engine (`pdf_builder.py`)**: Automatically detects Arabic/Hebrew Unicode characters, applies Arabic contextual glyph reshaping via `arabic_reshaper`, applies BiDi reordering via `bidi.algorithm`, switches alignment to right-to-left, and subsets Windows/macOS/Linux system Unicode TrueType fonts (`Arial`, `Segoe UI`, `Tahoma`, `Liberation Sans`, `DejaVu Sans`).
+- **PowerPoint Engine (`pptx_builder.py`)**: Automatically detects Arabic/Hebrew Unicode characters, injects OpenXML `<a:pPr rtl="1"/>` into paragraph properties, assigns complex script font `<a:cs typeface="Arial"/>`, right-aligns text, and mirrors geometry (card order, badge positions).
+- **PDF Engine (`pdf_builder.py`)**: Automatically detects Arabic/Hebrew characters, applies Arabic contextual glyph reshaping via `arabic_reshaper`, applies BiDi reordering via `bidi.algorithm`, switches alignment to right-to-left, and subsets system Unicode TrueType fonts.
 - **Word Engine (`docx_builder.py`)**: Injects OpenXML `<w:bidi/>` into paragraph properties, `<w:rtl/>` into character run properties, mirrors table cell borders, and right-aligns headings.
 
 ### 2. English & Left-to-Right (LTR) Support:
@@ -103,113 +152,101 @@ The rendering engines are pre-configured to output publication-grade deliverable
 
 ---
 
-## 🖼️ Markdown Syntax Reference
+## 📊 Architectural Diagrams & Visual Engineering in PDF
 
-### Images
-```markdown
-![Descriptive caption](path/to/image.png)
-```
-Images are embedded in both PDF and DOCX with automatic aspect ratio preservation and centered caption.
+> [!IMPORTANT]
+> **STRICT BAN ON ASCII / TEXT DIAGRAMS**
+> - NEVER use ASCII art, unicode box-drawing characters (`│`, `┌─┐`, `└─┘`, `├──`, `└──`), or vertical arrows (`▼`, `▲`, `►`, `|`) inside code blocks or plaintext to illustrate a process, flowchart, or architecture.
+> - Plaintext code blocks reverse and break Arabic letters, disconnect arrows, and look amateurish.
+> - **ALWAYS** produce **REAL VISUAL DIAGRAMS** using **Mermaid (` ```mermaid `)**.
 
-### Nested Bullets
-```markdown
-- Top level item
-  - Second level item
-      - Third level item
-```
-
-### Blockquotes (plain quotes, NOT callouts)
-```markdown
-> This is a simple blockquote rendered with a gray accent bar.
-```
-
-### Callout Alerts (GitHub-style)
-- `> [!NOTE]` — General operational insights & background context (Blue tint)
-- `> [!TIP]` — Strategic recommendations & cost-saving tactics (Emerald tint)
-- `> [!IMPORTANT]` — Regulatory compliance, security mandates & critical findings (Rose tint)
-- `> [!WARNING]` — High-risk technical gotchas, vendor traps & failure modes (Amber tint)
-
-### Inline Formatting (DOCX-aware)
-- `**bold**` — Renders as bold Word Run in DOCX
-- `*italic*` — Renders as italic Word Run in DOCX
-- `` `code` `` — Renders in Consolas with gray background shading in DOCX
+### PDF & Multi-Format Diagram Rendering Pipeline:
+1. **Headless Vector Browser Pipeline (`html_builder.py` + Chromium)**:
+   - When a research document contains ````mermaid```` blocks, `export_engine.py` builds an HTML intermediate with `HTMLReportBuilder` and compiles Mermaid.js diagrams with custom executive theme variables (Cairo/Inter typography, harmonious colors).
+   - Renders pixel-perfect vector SVG diagrams directly into the PDF via Headless Chromium (`--headless=new`, `--virtual-time-budget=6000`, `--print-to-pdf`), preventing page breaks inside diagram cards (`break-inside: avoid;`).
+   - If no browser is present, it falls back gracefully to ReportLab.
+2. **Word (.docx) Diagram Cards**:
+   - `DocxReportBuilder.add_mermaid_block()` wraps Mermaid specifications in an executive bordered card with an accent badge and clean monospace font.
+3. **Standardized Mermaid `classDef` Palette Tokens**:
+   - Flowcharts must include standardized semantic tokens:
+     ```mermaid
+     flowchart TD
+         classDef startEnd fill:#1e293b,stroke:#0f172a,stroke-width:2px,color:#ffffff,font-weight:bold;
+         classDef process fill:#eff6ff,stroke:#2563eb,stroke-width:1.5px,color:#1e3a8a;
+         classDef decision fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f,font-weight:bold;
+         classDef successNode fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#065f46,font-weight:bold;
+         classDef rejectNode fill:#fef2f2,stroke:#dc2626,stroke-width:1.5px,color:#991b1b;
+     ```
+   - Reference: [`references/diagrams_and_visuals_guide.md`](file:///d:/Maxcode/research_agente/skills/professional-researcher/references/diagrams_and_visuals_guide.md).
 
 ---
 
-## 🛠️ Installation & Setup
+## 📦 Execution & CLI Reference
 
-### 1. Install Dependencies
+### 1. Unified Autonomous Multi-Agent Pipeline (`run_agent.py`)
 ```bash
-pip install -r .agents/skills/professional-researcher/requirements.txt
+python run_agent.py "Autonomous Enterprise AI Gateways" \
+  --domain "FinTech" \
+  --archetype "modern_dark" \
+  --logo "researches/my_project/assets/logo.png" \
+  --report "researches/my_project/report/report.md" \
+  --presentation "researches/my_project/presentation/deck.md" \
+  --output-dir "researches/my_project/agent_system_output" \
+  --formats "pptx,pdf,docx"
 ```
 
-### 2. Automated Dual-Export (CLI)
+### 2. Interactive Intake & Style Wizard
 ```bash
-# Convert an English or Arabic research report into both PDF and Word (.docx)
-python .agents/skills/professional-researcher/scripts/export_engine.py \
+# Standalone CLI Style Questionnaire
+python skills/professional-researcher/scripts/export_engine.py --wizard
+
+# Direct Multi-Format Conversion with Custom Palette
+python skills/professional-researcher/scripts/export_engine.py \
   --input my_report.md \
   --pdf my_report.pdf \
-  --docx my_report.docx
-
-# With custom metadata overrides
-python .agents/skills/professional-researcher/scripts/export_engine.py \
-  --input report.md \
-  --pdf final.pdf \
-  --docx final.docx \
-  --title "Custom Strategic Title" \
-  --author "Lead Researcher" \
-  --org "TeknoKeys Enterprise"
+  --docx my_report.docx \
+  --pptx my_presentation.pptx \
+  --logo assets/logo.png \
+  --primary-color "#0A0F1D" \
+  --accent-color "#38BDF8"
 ```
 
-### 3. Python API Integration
-```python
-from export_engine import convert_file
-
-convert_file(
-    input_path="analysis.md",
-    pdf_path="analysis.pdf",
-    docx_path="analysis.docx",
-    title="Executive Briefing",
-    author="Research Director",
-    org="TeknoKeys Intelligence"
-)
-```
-
-### 4. Run Test Suite
+### 3. Comprehensive Test Suite
 ```bash
-pytest .agents/skills/professional-researcher/scripts/test_exporter.py -v
+python -m pytest tests/test_agent_system.py skills/professional-researcher/scripts/test_exporter.py -v
 ```
+*(All 65 unit and integration tests pass cleanly)*
 
 ---
 
-## 📁 Skill Architecture
+## 📁 System Architecture Map
 
 ```text
-skills/professional-researcher/
-├── SKILL.md                          # Master skill instructions and rules
-├── README.md                         # Quick-start guide
-├── package.json                      # Metadata (v2.0)
-├── requirements.txt                  # Python dependencies [NEW]
-├── scripts/
-│   ├── export_engine.py              # Unified CLI, parser, inline run parser [UPGRADED]
-│   ├── pdf_builder.py                # Cross-platform PDF engine w/ TOC, images, blockquotes [UPGRADED]
-│   ├── docx_builder.py               # Rich-format DOCX engine w/ TOC, images, blockquotes [UPGRADED]
-│   └── test_exporter.py              # pytest test suite (30+ tests) [UPGRADED]
-├── templates/
-│   ├── research_report_template.md   # Standard comprehensive report template
-│   ├── executive_brief_template.md   # 2-3 page executive brief
-│   ├── technical_deep_dive.md        # Deep architectural blueprint
-│   └── report_schema.json            # Structured JSON schema (v2.0) [UPGRADED]
-├── references/
-│   ├── research_protocol.md          # ≥90% accuracy & triangulation rules
-│   ├── visual_styling_guide.md       # Typography, palette, and table styling
-│   ├── multilingual_guide.md         # Multilingual & RTL formatting guide
-│   └── export_api_reference.md       # Python API reference
-└── examples/
-    ├── sample_research_input.md      # Full English research report
-    ├── sample_arabic_research.md     # Full Arabic research report
-    ├── sample_research_output.pdf    # Compiled English PDF
-    ├── sample_research_output.docx   # Compiled English DOCX
-    ├── sample_arabic_research.pdf    # Compiled Arabic PDF
-    └── sample_arabic_research.docx   # Compiled Arabic DOCX
+research_agente/
+├── run_agent.py                      # Master CLI entry point for the Multi-Agent System
+├── research_agent/                   # Autonomous Agent Core Package
+│   ├── core/
+│   │   ├── orchestrator.py           # 6-phase master orchestrator
+│   │   └── state.py                  # State models (ResearchState, FactItem, Palette)
+│   └── agents/
+│       ├── investigator.py           # Deep research & fact-verification agent
+│       ├── template_researcher.py    # Benchmark deck & domain template researcher
+│       ├── designer.py               # Creative presentation architect & brand extractor
+│       ├── compiler.py               # Multi-format document compiler
+│       └── auditor.py                # Multimodal visual quality auditor
+├── researches/                       # Dedicated research workspaces (git-ignored)
+│   ├── jaib_nfc_partnership_proposal/
+│   ├── jaib_nfc_poc_walkthrough/
+│   └── yemen_dog_rescue_initiative/
+├── skills/professional-researcher/   # Foundational SDK & exporter engines
+│   ├── scripts/
+│   │   ├── export_engine.py          # Unified CLI, Markdown parser, triple exporter
+│   │   ├── color_synthesizer.py      # Logo color extraction & palette synthesis
+│   │   ├── pptx_builder.py           # 16:9 Widescreen PPTX engine with RTL
+│   │   ├── pdf_builder.py            # Platypus PDF engine with RTL & TOC
+│   │   ├── docx_builder.py           # Word DOCX engine with RTL OpenXML
+│   │   └── test_exporter.py          # Exporter test suite (51 tests)
+│   └── templates/                    # Production-ready markdown templates
+└── tests/
+    └── test_agent_system.py          # Agent system unit & integration test suite (14 tests)
 ```

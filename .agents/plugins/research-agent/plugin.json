@@ -1,0 +1,5 @@
+{
+  "name": "research-agent-system",
+  "version": "3.0.0",
+  "description": "Autonomous multi-agent research & presentation system featuring 6 specialized roles: Lead Orchestrator, Fact Investigator, Domain Template Researcher, Presentation Architect, Document Compiler, and Multimodal Visual Critic."
+}

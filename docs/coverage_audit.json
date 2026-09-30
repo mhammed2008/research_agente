@@ -1,0 +1,160 @@
+{
+  "total_symbols_audited": 381,
+  "documented_symbols_found": 381,
+  "missing_count": 0,
+  "skipped_count": 2,
+  "coverage_percentage": 100.0,
+  "missing_symbols": [],
+  "skipped_symbols": [
+    {
+      "file": "cmd/audit/main.go",
+      "name": "main",
+      "reason": "too_short_or_generic"
+    },
+    {
+      "file": "cmd/server/main.go",
+      "name": "main",
+      "reason": "too_short_or_generic"
+    }
+  ],
+  "per_file_coverage": {
+    "cmd/audit/main.go": {
+      "total": 7,
+      "documented": 7,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/apdu/apdu_test.go": {
+      "total": 2,
+      "documented": 2,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/apdu/engine.go": {
+      "total": 8,
+      "documented": 8,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/apdu/tlv.go": {
+      "total": 2,
+      "documented": 2,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/api/admin_handlers.go": {
+      "total": 12,
+      "documented": 12,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/api/api_test.go": {
+      "total": 11,
+      "documented": 11,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/api/auth_handlers.go": {
+      "total": 12,
+      "documented": 12,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/api/merchant_handlers.go": {
+      "total": 7,
+      "documented": 7,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/api/nfc_handlers.go": {
+      "total": 14,
+      "documented": 14,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/api/response.go": {
+      "total": 4,
+      "documented": 4,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/api/router.go": {
+      "total": 2,
+      "documented": 2,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/api/wallet_handlers.go": {
+      "total": 15,
+      "documented": 15,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/crypto/crypto_test.go": {
+      "total": 4,
+      "documented": 4,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/crypto/nfc_crypto.go": {
+      "total": 23,
+      "documented": 23,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/ledger/hub.go": {
+      "total": 6,
+      "documented": 6,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/ledger/ledger_test.go": {
+      "total": 9,
+      "documented": 9,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/ledger/service.go": {
+      "total": 9,
+      "documented": 9,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/storage/models.go": {
+      "total": 10,
+      "documented": 10,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/storage/sqlite_store.go": {
+      "total": 41,
+      "documented": 41,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/storage/sqlite_test.go": {
+      "total": 2,
+      "documented": 2,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "internal/storage/store.go": {
+      "total": 41,
+      "documented": 41,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "web/embed.go": {
+      "total": 1,
+      "documented": 1,
+      "missing": 0,
+      "percentage": 100.0
+    },
+    "web/static/js/app.js": {
+      "total": 139,
+      "documented": 139,
+      "missing": 0,
+      "percentage": 100.0
+    }
+  }
+}

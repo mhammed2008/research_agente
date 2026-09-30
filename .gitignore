@@ -10,10 +10,12 @@ edge-tmp/
 *.log
 *.tmp
 *.dat
-
 # Local LLM outputs and scratch data
 ollama_hardware_results.json
 ollama_results.json
+scratch/
+scratch_*.py
+image.png
 
 # Exclude legacy research documents, presentations, and scripts
 NFC_*
@@ -23,3 +25,6 @@ slides_preview/
 create_presentation_pptx.py
 generate_*.py
 nfc_*.py
+
+# Research deliverables and workspaces
+researches/
